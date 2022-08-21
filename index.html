@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap" rel="stylesheet">
+  <title>Document</title>
+  <style>
+    body {
+      min-height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom right, #000066, #990099);
+      display: flex;
+      justify-content: center;
+    }
+
+    #animated-text {
+      width: 70%;
+      color: white;
+      font-family: 'Silkscreen', cursive;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- !!!!! я реализовала возможность анимации текста как из контейнера #animated-text (сейчас все работает именно через него), так и из обычной переменной string (для данного способа нужно закомментировать/раскомментировать строчки кода, помеченные *)  !!!!! -->
+
+  <div id="animated-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div> 
+  <!-- * убрать весь текст из контейнера -->
+
+  <script>
+    // текст, который можно вставлять для проверки
+    // Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent orci lectus, hendrerit ac ultrices ac, accumsan id quam. Donec tristique dui quis mi congue, quis dapibus lorem auctor. Aliquam neque ipsum, euismod sed enim vestibulum, dapibus sagittis ex. Cras gravida convallis porta. Sed malesuada hendrerit odio, a suscipit nulla bibendum sit amet. Vivamus efficitur hendrerit consequat. Phasellus sit amet mauris quis enim bibendum sodales eu in sem. Cras placerat nisi sed lorem hendrerit fermentum. Vestibulum placerat maximus mollis.
+
+    let duraction = 5000;
+    let textContainer = document.querySelector("#animated-text");
+    // let string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."; // * (Write string to animate)
+
+    let string = textContainer.innerHTML; // *
+    textContainer.innerHTML = ""; // *
+
+    animateString(string);
+
+    function animateString(string) {
+
+      let fontSize;
+      if (string.length < 100) {
+        fontSize = 60;
+      }
+      else if (string.length >= 100 && string.length < 150) {
+        fontSize = 48;
+      }
+      else if (string.length >= 150 && string.length < 300) {
+        fontSize = 40;
+      }
+      else {
+        fontSize = 20;
+      }
+      textContainer.style.fontSize = `${fontSize}px`;
+
+      let str = Math.round(string.length / (textContainer.offsetWidth / (fontSize / 1.6))); //number of rows
+      let distance = (window.innerHeight / 2) - (str * (fontSize * 0.78)); // the distance to go
+      const letterTime = duraction / string.length;
+
+      string.split("").forEach((letter, i) => {
+        let span = document.createElement("span");
+        span.innerHTML = letter;
+        span.style.position = 'relative';
+        textContainer.append(span);
+
+        let start;
+        requestAnimationFrame(function step(time) {
+          if (!start) start = time + letterTime * i;
+          let progress = (time - start) / letterTime;
+          if (progress > 1) progress = 1;
+          span.style.top = `${progress * distance}px`;
+          if (progress < 1) requestAnimationFrame(step);
+        })
+      })
+    }
+  </script>
+</body>
+
+</html>
